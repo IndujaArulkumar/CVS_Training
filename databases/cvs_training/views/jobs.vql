@@ -1,0 +1,36 @@
+﻿# REQUIRES-PROPERTIES-FILE - # Do not remove this comment!
+CREATE OR REPLACE WRAPPER JDBC "JOBS"
+    DATASOURCENAME=ds_human
+    SCHEMANAME = '${databases.cvs_training.views.jdbc.jobs.SCHEMANAME}'
+    RELATIONNAME='JOBS' 
+    OUTPUTSCHEMA (
+        "JOB_ID" = 'JOB_ID' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='10')  NOT NULL SORTABLE,
+        "JOB_TITLE" = 'JOB_TITLE' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='35')  NOT NULL SORTABLE,
+        "MIN_SALARY" = 'MIN_SALARY' :'java.lang.Integer' (OPT) (sourcetyperadix='10', sourcetypename='NUMBER', sourcetypeid='3', sourcetypedecimals='0', sourcetypesize='6')  SORTABLE,
+        "MAX_SALARY" = 'MAX_SALARY' :'java.lang.Integer' (OPT) (sourcetyperadix='10', sourcetypename='NUMBER', sourcetypeid='3', sourcetypedecimals='0', sourcetypesize='6')  SORTABLE
+    )
+    CONSTRAINT 'JOB_ID_PK' PRIMARY KEY ( 'JOB_ID' )
+    INDEX 'JOB_ID_PK' CLUSTER UNIQUE PRIMARY ( 'JOB_ID' );
+
+CREATE OR REPLACE TABLE "JOBS" I18N us_pst (
+        "JOB_ID":text (sourcetyperadix = '10', sourcetypesize = '10', sourcetypeid = '12'), 
+        "JOB_TITLE":text (sourcetyperadix = '10', sourcetypesize = '35', sourcetypeid = '12'), 
+        "MIN_SALARY":int (sourcetyperadix = '10', sourcetypedecimals = '0', sourcetypesize = '6', sourcetypeid = '3'), 
+        "MAX_SALARY":int (sourcetyperadix = '10', sourcetypedecimals = '0', sourcetypesize = '6', sourcetypeid = '3')
+    )
+    CONSTRAINT 'JOB_ID_PK' PRIMARY KEY ( 'JOB_ID' )
+    CACHE OFF
+    TIMETOLIVEINCACHE DEFAULT
+    ADD SEARCHMETHOD "JOBS"(
+        I18N us_pst
+        CONSTRAINTS (
+             ADD "JOB_ID" (any) OPT ANY
+             ADD "JOB_TITLE" (any) OPT ANY
+             ADD "MIN_SALARY" (any) OPT ANY
+             ADD "MAX_SALARY" (any) OPT ANY
+        )
+        OUTPUTLIST ("JOB_ID", "JOB_TITLE", "MAX_SALARY", "MIN_SALARY"
+        )
+        WRAPPER (jdbc "JOBS")
+    );
+

@@ -1,0 +1,47 @@
+﻿# REQUIRES-PROPERTIES-FILE - # Do not remove this comment!
+CREATE OR REPLACE WRAPPER JDBC "LOCATIONS"
+    DATASOURCENAME=ds_human
+    SCHEMANAME = '${databases.cvs_training.views.jdbc.locations.SCHEMANAME}'
+    RELATIONNAME='LOCATIONS' 
+    OUTPUTSCHEMA (
+        "LOCATION_ID" = 'LOCATION_ID' :'java.lang.Integer' (OPT) (sourcetyperadix='10', sourcetypename='NUMBER', sourcetypeid='3', sourcetypedecimals='0', sourcetypesize='4')  NOT NULL SORTABLE,
+        "STREET_ADDRESS" = 'STREET_ADDRESS' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='40')  SORTABLE,
+        "POSTAL_CODE" = 'POSTAL_CODE' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='12')  SORTABLE,
+        "CITY" = 'CITY' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='30')  NOT NULL SORTABLE,
+        "STATE_PROVINCE" = 'STATE_PROVINCE' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='25')  SORTABLE,
+        "COUNTRY_ID" = 'COUNTRY_ID' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='CHAR', sourcetypeid='1', sourcetypesize='2')  SORTABLE
+    )
+    CONSTRAINT 'LOC_ID_PK' PRIMARY KEY ( 'LOCATION_ID' )
+    CONSTRAINT 'LOC_C_ID_FK' FOREIGN KEY ( 'COUNTRY_ID' ) 
+    REFERENCES 'HR'.'COUNTRIES'( 'COUNTRY_ID' )  ON DELETE RESTRICT NOT DEFERRABLE 
+    INDEX 'LOC_ID_PK' CLUSTER UNIQUE PRIMARY ( 'LOCATION_ID' )
+    INDEX 'LOC_CITY_IX' CLUSTER ( 'CITY' )
+    INDEX 'LOC_COUNTRY_IX' CLUSTER ( 'COUNTRY_ID' )
+    INDEX 'LOC_STATE_PROVINCE_IX' CLUSTER ( 'STATE_PROVINCE' );
+
+CREATE OR REPLACE TABLE "LOCATIONS" I18N us_pst (
+        "LOCATION_ID":int (sourcetyperadix = '10', sourcetypedecimals = '0', sourcetypesize = '4', sourcetypeid = '3'), 
+        "STREET_ADDRESS":text (sourcetyperadix = '10', sourcetypesize = '40', sourcetypeid = '12'), 
+        "POSTAL_CODE":text (sourcetyperadix = '10', sourcetypesize = '12', sourcetypeid = '12'), 
+        "CITY":text (sourcetyperadix = '10', sourcetypesize = '30', sourcetypeid = '12'), 
+        "STATE_PROVINCE":text (sourcetyperadix = '10', sourcetypesize = '25', sourcetypeid = '12'), 
+        "COUNTRY_ID":text (sourcetyperadix = '10', sourcetypesize = '2', sourcetypeid = '1')
+    )
+    CONSTRAINT 'LOC_ID_PK' PRIMARY KEY ( 'LOCATION_ID' )
+    CACHE OFF
+    TIMETOLIVEINCACHE DEFAULT
+    ADD SEARCHMETHOD "LOCATIONS"(
+        I18N us_pst
+        CONSTRAINTS (
+             ADD "LOCATION_ID" (any) OPT ANY
+             ADD "STREET_ADDRESS" (any) OPT ANY
+             ADD "POSTAL_CODE" (any) OPT ANY
+             ADD "CITY" (any) OPT ANY
+             ADD "STATE_PROVINCE" (any) OPT ANY
+             ADD "COUNTRY_ID" (any) OPT ANY
+        )
+        OUTPUTLIST ("CITY", "COUNTRY_ID", "LOCATION_ID", "POSTAL_CODE", "STATE_PROVINCE", "STREET_ADDRESS"
+        )
+        WRAPPER (jdbc "LOCATIONS")
+    );
+

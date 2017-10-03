@@ -1,0 +1,35 @@
+﻿# REQUIRES-PROPERTIES-FILE - # Do not remove this comment!
+CREATE OR REPLACE WRAPPER JDBC "COUNTRIES"
+    DATASOURCENAME=ds_human
+    SCHEMANAME = '${databases.cvs_training.views.jdbc.countries.SCHEMANAME}'
+    RELATIONNAME='COUNTRIES' 
+    OUTPUTSCHEMA (
+        "COUNTRY_ID" = 'COUNTRY_ID' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='CHAR', sourcetypeid='1', sourcetypesize='2')  NOT NULL SORTABLE,
+        "COUNTRY_NAME" = 'COUNTRY_NAME' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='40')  SORTABLE,
+        "REGION_ID" = 'REGION_ID' :'java.math.BigDecimal' (OPT) (sourcetyperadix='10', sourcetypename='NUMBER', sourcetypeid='3')  SORTABLE
+    )
+    CONSTRAINT 'COUNTRY_C_ID_PK' PRIMARY KEY ( 'COUNTRY_ID' )
+    CONSTRAINT 'COUNTR_REG_FK' FOREIGN KEY ( 'REGION_ID' ) 
+    REFERENCES 'HR'.'REGIONS'( 'REGION_ID' )  ON DELETE RESTRICT NOT DEFERRABLE 
+    INDEX 'COUNTRY_C_ID_PK' CLUSTER UNIQUE PRIMARY ( 'COUNTRY_ID' );
+
+CREATE OR REPLACE TABLE "COUNTRIES" I18N us_pst (
+        "COUNTRY_ID":text (sourcetyperadix = '10', sourcetypesize = '2', sourcetypeid = '1'), 
+        "COUNTRY_NAME":text (sourcetyperadix = '10', sourcetypesize = '40', sourcetypeid = '12'), 
+        "REGION_ID":decimal (sourcetyperadix = '10', sourcetypeid = '3')
+    )
+    CONSTRAINT 'COUNTRY_C_ID_PK' PRIMARY KEY ( 'COUNTRY_ID' )
+    CACHE OFF
+    TIMETOLIVEINCACHE DEFAULT
+    ADD SEARCHMETHOD "COUNTRIES"(
+        I18N us_pst
+        CONSTRAINTS (
+             ADD "COUNTRY_ID" (any) OPT ANY
+             ADD "COUNTRY_NAME" (any) OPT ANY
+             ADD "REGION_ID" (any) OPT ANY
+        )
+        OUTPUTLIST ("COUNTRY_ID", "COUNTRY_NAME", "REGION_ID"
+        )
+        WRAPPER (jdbc "COUNTRIES")
+    );
+

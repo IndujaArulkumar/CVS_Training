@@ -1,0 +1,30 @@
+﻿# REQUIRES-PROPERTIES-FILE - # Do not remove this comment!
+CREATE OR REPLACE WRAPPER JDBC "REGIONS"
+    DATASOURCENAME=ds_human
+    SCHEMANAME = '${databases.cvs_training.views.jdbc.regions.SCHEMANAME}'
+    RELATIONNAME='REGIONS' 
+    OUTPUTSCHEMA (
+        "REGION_ID" = 'REGION_ID' :'java.math.BigDecimal' (OPT) (sourcetyperadix='10', sourcetypename='NUMBER', sourcetypeid='3')  NOT NULL SORTABLE,
+        "REGION_NAME" = 'REGION_NAME' :'java.lang.String' (OPT) (sourcetyperadix='10', sourcetypename='VARCHAR2', sourcetypeid='12', sourcetypesize='25')  SORTABLE
+    )
+    CONSTRAINT 'REG_ID_PK' PRIMARY KEY ( 'REGION_ID' )
+    INDEX 'REG_ID_PK' CLUSTER UNIQUE PRIMARY ( 'REGION_ID' );
+
+CREATE OR REPLACE TABLE "REGIONS" I18N us_pst (
+        "REGION_ID":decimal (sourcetyperadix = '10', sourcetypeid = '3'), 
+        "REGION_NAME":text (sourcetyperadix = '10', sourcetypesize = '25', sourcetypeid = '12')
+    )
+    CONSTRAINT 'REG_ID_PK' PRIMARY KEY ( 'REGION_ID' )
+    CACHE OFF
+    TIMETOLIVEINCACHE DEFAULT
+    ADD SEARCHMETHOD "REGIONS"(
+        I18N us_pst
+        CONSTRAINTS (
+             ADD "REGION_ID" (any) OPT ANY
+             ADD "REGION_NAME" (any) OPT ANY
+        )
+        OUTPUTLIST ("REGION_ID", "REGION_NAME"
+        )
+        WRAPPER (jdbc "REGIONS")
+    );
+
